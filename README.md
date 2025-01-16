@@ -1,14 +1,20 @@
 # PIVlab - particle image velocimetry (PIV) tool with GUI
-*PIVlab is a graphical user interface (GUI) based particle image velocimetry (PIV) software. It can be used to control OPTOLUTION's lasers, cameras and synchronizers, and of course it calculates the velocity distribution within imported (or captured) particle image pairs. It can also be used to derive, display and export multiple parameters of the flow pattern. The simple, GUI makes PIV data acquisition and data post-processing fast and efficient.*
 
-Listen to a podcast about PIVlab, its development and ideas for the future: 
-[Inspiring Computing - PIVlab Unveiled: A Deep Dive into Particle Image Velocimetry with MATLAB](https://www.buzzsprout.com/2107763/15106425)
+**[http://PIVlab.de](http://PIVlab.de)**
+
+*PIVlab is a free and open-source particle image velocimetry (PIV) software and is currently the most frequently cited PIV tool on the market. It can be used to calculate the velocity distribution within imported (or captured) images. It can also control [OPTOLUTION's lasers, cameras and synchronizers](https://www.optolution.com/en/products/particle-image-velocimetry-piv), and derive, display and export multiple parameters of the flow pattern. The simple graphical user interface makes PIV data acquisition and data post-processing fast and efficient.*
+
+**Download PIVlab:**
+*   as a free [stand-alone program for windows computers](https://github.com/Shrediquette/PIVlab/releases/latest/download/PIVlab_installer.exe) (all features, no requirements)
+*   as free [toolbox inside Matlab for every operating system](https://github.com/Shrediquette/PIVlab/releases/latest/download/PIVlab.mltbx) (all features, Matlab required)
+*   as free [web browser-based app by using Matlab online](https://matlab.mathworks.com/open/fileexchange/v1?id=27659) (no hardware interaction, free Mathworks account required)
 
 ![PIVlab_screenshot](https://github.com/Shrediquette/PIVlab/blob/main/images/PIVlab_screenshot.jpg)
 
 **   **
 **PIVlab comes with it's own unique hardware: Pulsed lasers, LEDs, synchronizers and cameras are available here: [Optolution.com](https://www.optolution.com/en/products/particle-image-velocimetry-piv/)**
 **   **
+
 Video tutorial 1/3: Quickstart guide
 https://youtube.com/watch?v=g2hcTRAzBvY
 
@@ -22,23 +28,14 @@ PIVlab controlling cameras, lasers, etc.
 https://youtu.be/8B5M31NWlJc
 
 
-**Installation:** https://github.com/Shrediquette/PIVlab/wiki#installation-instructions
+**Installation:** [https://github.com/Shrediquette/PIVlab/wiki#installation-instructions](https://shrediquette.github.io/PIVlab/wiki/0-installation/)
 
-**Please ask your questions in the PIVlab forum:** http://pivlab.blogspot.de/p/forum.html
 
-**Software documentation is available in the wiki:** https://github.com/Shrediquette/PIVlab/wiki
-**   **
-**Code contributors:**
-* Main: William Thielicke (http://william.thielicke.org)
-* Name spaces / packages: Mikhil from MATHWORKS (https://github.com/Mikhil11)
-* Vectorization in piv_fftmulti: Sergey Filatov (http://www.issp.ac.ru/lqc/people.html)
-* GUI parallelization: Chun-Sheng Wang, ParaPIV (https://de.mathworks.com/matlabcentral/fileexchange/63358-parapiv)
-* Command line parallelization: Quynh M. Nguyen (https://github.com/quynhneo)
-* Speed, memory and general optimizations: Maarten (https://github.com/mkbosmans) via VORtech.nl via MathWorks
-**   **
-We would like to acknowledge Uri Shavit, Roi Gurka &amp; Alex Liberzon for sharing their code for 3-point Gaussian sub-pixel estimation. Thanks to Nima Bigdely Shamlo for allowing me to include the LIC function. Thanks to Raffel et al. for writing the book "Particle Image Velocimetry, A Practical Guide", which was a very good help. Thanks to the [thousands of publications that use PIVlab for research](https://scholar.google.de/scholar?cites=819244312015141543)!
+**Wiki with information, tutorials, manuals etc:** [https://github.com/Shrediquette/PIVlab/wiki](https://shrediquette.github.io/PIVlab/wiki)
 
-Visit Matlabs File exchange site for PIVlab: [![View PIVlab - particle image velocimetry (PIV) tool on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://de.mathworks.com/matlabcentral/fileexchange/27659-pivlab-particle-image-velocimetry-piv-tool)
 
 PIVlab [can be run online using MATLAB online](https://youtu.be/EQHfAmRxXw4?si=X77HabqAIbuHRIGT). MATLAB online is free (after registration) with a limited usage time per user (20 hrs/month):
 [![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=Shrediquette/PIVlab&file=PIVlab_GUI.m)
+
+
+Thanks to the [thousands of publications that use PIVlab for research](https://scholar.google.de/scholar?hl=de&as_sdt=0%2C5&q=%28%22pivlab%22+%7C+%22piv+lab%22%29+AND+%28%22piv%22+%7C+%22particle+image+velocimetry%22%29+-%22%40pivlab.net%22&btnG=)!

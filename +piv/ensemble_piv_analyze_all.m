@@ -14,6 +14,8 @@ gui.put('cancel',0);
 ok=gui.checksettings;
 if ok==1
 	filepath=gui.retr('filepath');
+	framenum=gui.retr('framenum');
+	framepart=gui.retr('framepart');
 	filename=gui.retr('filename');
 	resultslist=cell(0); %clear old results
 	gui.toolsavailable(0,'Busy, please wait...');
@@ -94,11 +96,11 @@ if ok==1
 
 	if gui.retr('video_selection_done') == 0
 		video_frame_selection=[];
-		[x, y, u, v, typevector,correlation_map] = piv_FFTensemble (autolimit, filepath,video_frame_selection,bg_img_A,bg_img_B,clahe,highp,intenscap,clahesize,highpsize,wienerwurst,wienerwurstsize,roirect,converted_mask,interrogationarea,step,subpixfinder,passes,int2,int3,int4,mask_auto,imdeform,repeat,do_pad);
+		[x, y, u, v, typevector,correlation_map] = piv.piv_FFTensemble (autolimit, filepath,framenum,framepart,video_frame_selection,bg_img_A,bg_img_B,clahe,highp,intenscap,clahesize,highpsize,wienerwurst,wienerwurstsize,roirect,converted_mask,interrogationarea,step,subpixfinder,passes,int2,int3,int4,mask_auto,imdeform,repeat,do_pad);
 	else
 		video_frame_selection=gui.retr('video_frame_selection');
 		video_reader_object = gui.retr('video_reader_object');
-		[x, y, u, v, typevector,correlation_map] = piv_FFTensemble (autolimit, video_reader_object ,video_frame_selection,bg_img_A,bg_img_B,clahe,highp,intenscap,clahesize,highpsize,wienerwurst,wienerwurstsize,roirect,converted_mask,interrogationarea,step,subpixfinder,passes,int2,int3,int4,mask_auto,imdeform,repeat,do_pad);
+		[x, y, u, v, typevector,correlation_map] = piv.piv_FFTensemble (autolimit, video_reader_object ,framenum,framepart,video_frame_selection,bg_img_A,bg_img_B,clahe,highp,intenscap,clahesize,highpsize,wienerwurst,wienerwurstsize,roirect,converted_mask,interrogationarea,step,subpixfinder,passes,int2,int3,int4,mask_auto,imdeform,repeat,do_pad);
 	end
 
 	cancel = gui.retr('cancel');
@@ -136,7 +138,7 @@ if ok==1
 		set(handles.overall, 'string' , ['Total progress: ' int2str(100) '%'])
 		set(handles.totaltime, 'String',['Analysis time: ' num2str(round(toc*10)/10) ' s']);
 		try
-			sound(audioread('finished.mp3'),44100);
+			sound(audioread(fullfile('+misc','finished.mp3')),44100);
 		catch
 		end
 	else %user pressed cancel, no results

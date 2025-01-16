@@ -9,7 +9,7 @@ OPTRONIS_frames_to_capture = nr_of_images*2+fix_Optronis_skipped_frame;
 
 %% capture data
 
-while OPTRONIS_vid.FramesAcquired < (OPTRONIS_frames_to_capture) &&  getappdata(hgui,'cancel_capture') ~=1
+while OPTRONIS_vid.FramesAcquired < (OPTRONIS_frames_to_capture+2) &&  getappdata(hgui,'cancel_capture') ~=1
     ima = image_handle_OPTRONIS.CData;
     if ~isinf(OPTRONIS_frames_to_capture)
         set(frame_nr_display,'String',['Image nr.: ' int2str(round(OPTRONIS_vid.FramesAcquired/2))]);
@@ -189,8 +189,8 @@ while OPTRONIS_vid.FramesAcquired < (OPTRONIS_frames_to_capture) &&  getappdata(
                         focus_edit_field=getappdata(lens_control_window,'handle_to_focus_edit_field');
                         set(focus_edit_field,'String',num2str(focus_peak)); %update
                         %setappdata(hgui,'cancel_capture',1); %stop recording....?
-                        figure;plot(raw_data(:,1),raw_data(:,2))
-                        hold on;plot(sharpness_focus_table(:,1),normalize(sharpness_focus_table(:,2),'range'));hold off
+                        figure;plot(raw_data(:,1),raw_data(:,2),'Linewidth',2)
+                        hold on;plot(sharpness_focus_table(:,1),normalize(sharpness_focus_table(:,2),'range'),'Linewidth',2);hold off
                         title('Focus search')
                         xlabel('Pulsewidth us')
                         ylabel('Sharpness')
@@ -207,7 +207,8 @@ while OPTRONIS_vid.FramesAcquired < (OPTRONIS_frames_to_capture) &&  getappdata(
         sharp_loop_cnt=[];
     end
 end
-
+OPTRONIS_settings=get(OPTRONIS_vid);
+OPTRONIS_settings.Source.EnableFan = 'On';
 
 stoppreview(OPTRONIS_vid)
 stop(OPTRONIS_vid);

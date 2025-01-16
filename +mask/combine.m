@@ -2,6 +2,11 @@ function converted_mask=combine(mask_size,mask_positions)
 mask_size=mask_size(1:2);
 editedMask = zeros(mask_size,'uint8');
 if ~isempty(mask_positions)
+	for i=size(mask_positions,1):-1:1 %remove empty masks.
+		if isempty(mask_positions{i,2})
+			mask_positions(i,:)=[];
+		end
+	end
 	for i=1:size(mask_positions,1)
 		if 	strcmp(mask_positions{i,1},'ROI_object_freehand')	|| strcmp(mask_positions{i,1},'ROI_object_polygon') || strcmp(mask_positions{i,1},'ROI_object_external')
 			xi=mask_positions{i,2}(:,1);
@@ -39,6 +44,6 @@ handles=gui.gethand;
 current_mask_nr=floor(get(handles.fileselector, 'value'));
 masks_in_frame{1,current_mask_nr}={}; %remove existing before combining
 blocations = bwboundaries(converted_mask,'holes');
-masks_in_frame=mask.px_to_rois(blocations,current_mask_nr,masks_in_frame);%apply mask at the current frame and the following frames.
+masks_in_frame=mask.px_to_rois(blocations,current_mask_nr,masks_in_frame,'on');%apply mask at the current frame and the following frames.
 gui.put('masks_in_frame',masks_in_frame);
 gui.sliderdisp(gui.retr('pivlab_axis'));

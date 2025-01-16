@@ -50,7 +50,7 @@ handles.zoomon = uicontrol(handles.tools,'Style','togglebutton','units', 'charac
 item=[parentitem(3)/2+parentitem(3)/2/2 item(2) parentitem(3)/2/2 parentitem(3)/2/2/4];
 handles.panon = uicontrol(handles.tools,'Style','togglebutton','units', 'characters','position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Callback',@gui.panon_Callback,'tag','panon','TooltipString','Pan');
 
-load icons.mat
+load (fullfile('images','icons.mat'))
 set(handles.zoomon, 'cdata',zoompic);
 set(handles.panon, 'cdata',panpic);
 
@@ -69,7 +69,7 @@ handles.quick4 = uicontrol(handles.quick,'Style','togglebutton','units', 'charac
 handles.quick5 = uicontrol(handles.quick,'Style','togglebutton','units', 'characters','position',[5*(quickwidth/(iconamount-1))-(quickwidth/(iconamount-1)) 0.1 iconwidth iconheight],'Callback',@gui.quick5_Callback,'tag','quick5','TooltipString','Analyze');
 handles.quick6 = uicontrol(handles.quick,'Style','togglebutton','units', 'characters','position',[6*(quickwidth/(iconamount-1))-(quickwidth/(iconamount-1)) 0.1 iconwidth iconheight],'Callback',@gui.quick6_Callback,'tag','quick6','TooltipString','Calibrate');
 
-load icons_quick.mat
+load (fullfile('images','icons_quick.mat'))
 set(handles.quick1, 'cdata',loadpic);
 set(handles.quick2, 'cdata',maskpic);
 set(handles.quick3, 'cdata',prepic);
@@ -95,20 +95,27 @@ item=[0 0 0 0];
 item=[0 item(2)+item(4) parentitem(3) 2];
 handles.loadimgsbutton = uicontrol(handles.multip01,'Style','pushbutton','String','Import images','Units','characters', 'Fontunits','points','Fontsize',12,'Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Callback', {@import.loadimgsbutton_Callback,1,[]},'Tag','loadimgsbutton','TooltipString','Load image data');
 
-item=[0 item(2)+item(4)+margin/2 parentitem(3) 2];
+item=[0 item(2)+item(4)+margin/4 parentitem(3) 2];
 handles.loadvideobutton = uicontrol(handles.multip01,'Style','pushbutton','String','Import video','Units','characters', 'Fontunits','points','Fontsize',12,'Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Callback', @import.loadvideobutton_Callback,'Tag','loadvideobutton','TooltipString','Load video file');
 
-item=[0 item(2)+item(4)+margin/2 parentitem(3) 2];
+item=[0 item(2)+item(4)+margin/4 parentitem(3) 2];
 handles.loadsessionbutton = uicontrol(handles.multip01,'Style','pushbutton','String','Load session','Units','characters', 'Fontunits','points','Fontsize',12,'Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Callback', @import.load_session_Callback,'Tag','loadsessionbutton','TooltipString','Load previously saved session file');
+
+item=[0 item(2)+item(4)+margin/4 parentitem(3) 2];
+handles.acquirebutton = uicontrol(handles.multip01,'Style','pushbutton','String','Acquire images','Units','characters', 'Fontunits','points','Fontsize',12,'Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Callback', @acquisition.capture_images_Callback,'Tag','acquirebutton','TooltipString','Acquire PIV images in PIVlab');
 
 item=[0 item(2)+item(4)+margin*1.5 parentitem(3) 1];
 handles.text2 = uicontrol(handles.multip01,'Style','text','units', 'characters','Horizontalalignment', 'left','position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'String','Image list:');
 
 PIVver=gui.retr('PIVver');
 item=[0 item(2)+item(4) parentitem(3) 12];
-handles.filenamebox = uicontrol(handles.multip01,'Style','ListBox','units','characters','position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'String',{['Welcome to PIVlab ' PIVver '.'] 'Add images by clicking the' '"Import images" button above.'},'Callback',@gui.filenamebox_Callback,'tag','filenamebox','TooltipString','This list displays the frames that you currently loaded');
+handles.filenamebox = uicontrol(handles.multip01,'Style','ListBox','max',3,'min',1,'units','characters','position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'String',{['Welcome to PIVlab ' PIVver '.'] 'Add images by clicking the' '"Import images" button above.'},'Callback',@gui.filenamebox_Callback,'tag','filenamebox','TooltipString','This list displays the frames that you currently loaded');
+gui.put('standard_bg_color',get(handles.filenamebox,'Backgroundcolor'));
 
-item=[0 item(2)+item(4) parentitem(3) 7];
+item=[0 item(2)+item(4)+margin/8 parentitem(3)/3*2 2];
+handles.remove_imgs = uicontrol(handles.multip01,'Style','pushbutton','String','Remove images','Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Callback', @import.remove_images_from_list,'Tag','remove_imgs','TooltipString','Remove images from the image list','enable','off');
+
+item=[0 item(2)+item(4) parentitem(3) 3];
 handles.text4 = uicontrol(handles.multip01,'Style','text','units','characters','Horizontalalignment', 'left','position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'String','Use the scrollbar in the "Tools" panel to cycle through the images.');
 
 item=[0 item(2)+item(4) parentitem(3) 4];
@@ -215,7 +222,7 @@ parentitem=get(handles.uipanel25_2, 'Position');
 
 
 item=[0 0 parentitem(3) 1.5];
-handles.mask_bright_or_dark = uicontrol(handles.uipanel25_2,'Style','popupmenu','String',{'Bright area mask generator','Dark area mask generator','Low contrast area mask generator'},'Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','mask_bright_or_dark','Callback',@mask.bright_or_dark_Callback, 'TooltipString','Select different automatic mask generators here');
+handles.mask_bright_or_dark = uicontrol(handles.uipanel25_2,'Style','popupmenu','String',{'Bright area mask generator','Dark area mask generator','Low contrast area mask generator', 'Custom script (coming soon)'},'Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','mask_bright_or_dark','Callback',@mask.bright_or_dark_Callback, 'TooltipString','Select different automatic mask generators here');
 
 
 %% bright area mask generator
@@ -231,7 +238,7 @@ size_width=parentitem(3)/10*1.5;
 
 %binarize
 item=[margin/4 item(2)+item(4)+margin/2 checkbox_width 1];
-handles.binarize_enable = uicontrol(handles.uipanel25_3,'Style','checkbox', 'value',1, 'String','','Units','characters', 'Fontunits','points','Position',[item(1)+margin/4 parentitem(4)-item(4)-margin-item(2) item(3)-margin*2/4 item(4)],'Callback',@mask.binarize_enable_Callback,'Tag','binarize_enable','TooltipString','Enable this mask generator');
+handles.binarize_enable = uicontrol(handles.uipanel25_3,'Style','checkbox', 'value',0, 'String','','Units','characters', 'Fontunits','points','Position',[item(1)+margin/4 parentitem(4)-item(4)-margin-item(2) item(3)-margin*2/4 item(4)],'Callback',@mask.binarize_enable_Callback,'Tag','binarize_enable','TooltipString','Enable this mask generator');
 
 item=[checkbox_width item(2) filter_text_width 1];
 handles.binarize_text = uicontrol(handles.uipanel25_3,'Style','text', 'String','Enable','HorizontalAlignment','left','Units','characters', 'Fontunits','points','Position',[item(1)+margin/4 parentitem(4)-item(4)-margin-item(2) item(3)-margin*2/4 item(4)],'Tag','binarize_text');
@@ -310,7 +317,7 @@ handles.mask_fill_enable = uicontrol(handles.uipanel25_3,'Style','checkbox', 'va
 item=[checkbox_width item(2) filter_text_width 1];
 handles.fill_text = uicontrol(handles.uipanel25_3,'Style','text', 'String','Fill holes','HorizontalAlignment','left','Units','characters', 'Fontunits','points','Position',[item(1)+margin/4 parentitem(4)-item(4)-margin-item(2) item(3)-margin*2/4 item(4)],'Tag','fill_text');
 
-
+mask.binarize_enable_Callback
 
 %% dark area mask generator
 parentitem=get(handles.uipanel25_2, 'Position');
@@ -645,23 +652,51 @@ handles.textSuggest = uicontrol(handles.multip04,'Style','text','units','charact
 item=[parentitem(3)/4 item(2) parentitem(3)/1.85 1.5];
 handles.SuggestSettings = uicontrol(handles.multip04,'Style','pushbutton','String','Suggest settings','Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Callback', @piv.SuggestPIVsettings,'Tag','SuggestSettings','TooltipString','Suggest PIV settings based on image data in current frame');
 
-item=[0 item(2)+item(4) parentitem(3) 6.5];
+item=[0 item(2)+item(4) parentitem(3) 3.5];
 handles.uipanel35 = uipanel(handles.multip04, 'Units','characters', 'Position', [item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'title','PIV algorithm', 'Tag','uipanel35','fontweight','bold');
 
 parentitem=get(handles.uipanel35, 'Position');
 item=[0 0 0 0];
 item=[0 item(2)+item(4) parentitem(3) 1.5];
-handles.fftmulti = uicontrol(handles.uipanel35,'Style','radiobutton','value',1,'units','characters','position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'String','FFT window deformation','tag','fftmulti','Callback',@piv.fftmulti_Callback,'TooltipString','FFT based multipass algorithm');
-
-item=[0 item(2)+item(4) parentitem(3) 1.5];
-handles.ensemble = uicontrol(handles.uipanel35,'Style','radiobutton','value',0,'units','characters','position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'String','Ensemble correlation','tag','ensemble','Callback',@piv.ensemble_Callback,'TooltipString','Ensemble window deformation correlation. For micro PIV and other sparesly seeded flow.');
-
-item=[0 item(2)+item(4) parentitem(3) 1.5];
-handles.dcc = uicontrol(handles.uipanel35,'Style','radiobutton','value',0,'units','characters','position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'String','DCC (deprecated)','tag','dcc','Callback',@piv.dcc_Callback,'TooltipString','DCC based single pass algorithm. Not recommended anymore');
+handles.algorithm_selection = uicontrol(handles.uipanel35,'Style','popupmenu', 'String',{'Multipass FFT window deformation','Ensemble multipass FFT window deformation','Single pass direct cross-correlation (DCC)', 'Optical flow (wavelet-based)'},'Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','algorithm_selection','TooltipString',sprintf('* Multipass FFT window deformation is the standard algorithm, suitable for most cases.\n* Ensemble correlation is for sparsely seeded flows (e.g. micro-piv). \n* DCC is the first algorithm that was implemented in PIVlab. \n* Optical flow can yield higher resolution with appropriate image data (but is slower), implemented by Schmidt et al. from case.edu'),'Callback',@piv.algorithm_selection_Callback);
 
 parentitem=get(handles.multip04, 'Position');
 item=[0 0 0 0];
 
+%OFV UI items
+item=[0 8 parentitem(3) 8];
+handles.uipanel_ofv1 = uipanel(handles.multip04, 'Units','characters', 'Position', [item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'title','Optical flow settings', 'Tag','uipanel_ofv1','fontweight','bold','Visible','off');
+parentitem=get(handles.uipanel_ofv1, 'Position');
+item=[0 0 0 0];
+
+
+item=[0 item(2)+item(4) parentitem(3) 3];
+handles.text_parallelpatches = uicontrol(handles.uipanel_ofv1,'Style','text','units','characters','HorizontalAlignment','left','position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'String','Parallel process patches:','Tag','text_parallelpatches');
+
+item=[parentitem(3)/3*2 item(2) parentitem(3)/3*1 1.5];
+handles.ofv_parallelpatches = uicontrol(handles.uipanel_ofv1,'Style','popupmenu', 'String',{'Off' '128' '256' '512' '1024' 'Default'},'Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','ofv_parallelpatches','TooltipString','Parallel processing of patches');
+set (handles.ofv_parallelpatches,'Value',6);
+
+item=[0 item(2)+item(4) parentitem(3)/3*2 1.5];
+handles.text_ofv_median = uicontrol(handles.uipanel_ofv1,'Style','text','units','characters','HorizontalAlignment','left','position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'String','Inter-pass median filter:');
+
+item=[parentitem(3)/3*2 item(2) parentitem(3)/3*1 1.5];
+handles.ofv_median = uicontrol(handles.uipanel_ofv1,'Style','popupmenu', 'String',{'Off' '3x3' '5x5' '9x9'},'Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','ofv_median','TooltipString','Median filtering in between the pyramid levels');
+
+item=[0 item(2)+item(4) parentitem(3)/3*2 1.5];
+handles.text_ofv_pyramid_levels = uicontrol(handles.uipanel_ofv1,'Style','text','units','characters','HorizontalAlignment','left','position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'String','Pyramid levels:');
+
+item=[parentitem(3)/3*2 item(2) parentitem(3)/3*1 1.5];
+handles.ofv_pyramid_levels = uicontrol(handles.uipanel_ofv1,'Style','popupmenu', 'String',{'5' '4' '3' '2' '1'},'Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','ofv_pyramid_levels','TooltipString','Amount of coarse-to-fine steps, larger numbers required for larger displacements');
+handles.ofv_pyramid_levels.Value = 3; %set default
+
+item=[0 item(2)+item(4) parentitem(3)/3*2 1.5];
+handles.text_ofv_eta = uicontrol(handles.uipanel_ofv1,'Style','text','units','characters','HorizontalAlignment','left','position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'String','Smoothness (eta):');
+
+item=[parentitem(3)/3*2 item(2) parentitem(3)/3*1 1.5];
+handles.ofv_eta = uicontrol(handles.uipanel_ofv1,'Style','edit', 'String','40','Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','ofv_eta','TooltipString','smoothness determined by the regularization parameter');
+
+parentitem=get(handles.multip04, 'Position');
 item=[0 8 parentitem(3) 5];
 handles.uipanel41 = uipanel(handles.multip04, 'Units','characters', 'Position', [item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'title','Pass 1', 'Tag','uipanel41','fontweight','bold');
 
@@ -818,7 +853,7 @@ item=[parentitem(3)/3*2 item(2) parentitem(3)/3*1 1];
 handles.stdev_thresh = uicontrol(handles.multip06,'Style','edit','String','4.7','Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Callback',@validate.stdev_thresh_Callback,'Tag','stdev_thresh','TooltipString','Threshold for the standard deviation filter. Velocities that are outside the mean velocity +- n times the standard deviation will be removed');
 
 item=[0 item(2)+item(4)+margin/2 parentitem(3) 1];
-handles.loc_median = uicontrol(handles.multip06,'Style','checkbox','String','Local median filter','Value',1,'Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','loc_median','TooltipString','Compares each vector to the median of the surrounding vectors. Discards vector if difference is above the selected threshold');
+handles.loc_median = uicontrol(handles.multip06,'Style','checkbox','String','Local median filter','Value',1,'Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','loc_median','TooltipString','Normalized local median test from Westerweel and Scarano (2005)');
 
 item=[0 item(2)+item(4) parentitem(3)/3*2 1];
 handles.text19 = uicontrol(handles.multip06,'Style','text','String','Threshold','HorizontalAlignment','left','Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','text19');
@@ -898,7 +933,7 @@ item=[0 item(2)+item(4)+margin/4 parentitem(3)/3*2 1];
 handles.text27 = uicontrol(handles.multip07,'Style','text','String','time step [ms]','HorizontalAlignment','left','Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','text27');
 
 item=[parentitem(3)/3*2 item(2) parentitem(3)/3*1 1];
-handles.time_inp = uicontrol(handles.multip07,'Style','edit','String','1','Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Callback',@calibrate.time_inp_Callback,'Tag','time_inp','TooltipString','Enter the delta t between two images here');
+handles.time_inp = uicontrol(handles.multip07,'Style','edit','String','1','Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Callback',@calibrate.time_inp_Callback,'Tag','time_inp','TooltipString','Enter the delta t between two images here. Enter 0 if you want to measure displacements instead of velocities.');
 
 item=[0 item(2)+item(4)+margin/2 parentitem(3) 7.5];
 handles.uipanel_offsets = uipanel(handles.multip07, 'Units','characters', 'Position', [item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'title','Setup Offsets', 'Tag','uipanel_offsets','fontweight','bold');
@@ -1070,6 +1105,15 @@ item=[0 item(2)+item(4) parentitem(3) 1];
 handles.uniform_vector_scale = uicontrol(handles.multip09,'Style','checkbox','String','uniform vector scale','Value',0,'Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','uniform_vector_scale','TooltipString','Draw all vectors with the same size, independent of velocity');
 
 
+
+item=[0 item(2)+item(4)+margin/2 parentitem(3)/2 1];
+handles.displ_image_txt = uicontrol(handles.multip09,'Style','text','String','Background:', 'HorizontalAlignment','left','Units','characters','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','displ_image_txt');
+
+item=[parentitem(3)/2 item(2) parentitem(3)/2 1];
+handles.displ_image = uicontrol(handles.multip09,'Style','popupmenu', 'String',{'Display PIV image' 'Solid black','Solid white'},'Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','displ_image','TooltipString','Display the PIV image in the background');
+
+
+
 item=[0 item(2)+item(4)+margin/2 parentitem(3) 8];
 handles.uipanel37 = uipanel(handles.multip09, 'Units','characters', 'Position', [item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'title','Vector colors', 'Tag','uipanel37','fontweight','bold');
 
@@ -1115,7 +1159,7 @@ item=[parentitem(3)/5*3 item(2) parentitem(3)/5*2 2];
 handles.text140 = uicontrol(handles.uipanel37,'Style','text','String','interpolated vectors','HorizontalAlignment','left','Units','characters','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','text142', 'fontsize', 6);
 
 parentitem=get(handles.multip09, 'Position');
-item=[0 9.5+6.5 parentitem(3) 12];
+item=[0 9.5+6.5+1.5 parentitem(3) 11];
 handles.uipanel27 = uipanel(handles.multip09, 'Units','characters', 'Position', [item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'title','Derived parameter appearance', 'Tag','uipanel27','fontweight','bold');
 
 parentitem=get(handles.uipanel27, 'Position');
@@ -1134,7 +1178,7 @@ item=[0+item(3) item(2) parentitem(3)/2 1];
 handles.text143a = uicontrol(handles.uipanel27,'Style','text','String','Steps','Units','characters', 'HorizontalAlignment','left','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','text143a');
 
 item=[0 item(2)+item(4) parentitem(3)/2 1];
-handles.colormap_choice = uicontrol(handles.uipanel27,'Style','popupmenu', 'String',{'Parula','HSV','Jet','HSB','Hot','Cool','Spring','Summer','Autumn','Winter','Gray','Bone','Copper','Pink','Lines'},'Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','colormap_choice','TooltipString','Select the color map for displaying derived parameters here');
+handles.colormap_choice = uicontrol(handles.uipanel27,'Style','popupmenu', 'String',{'Parula','HSV','Jet','HSB','Hot','Cool','Spring','Summer','Autumn','Winter','Gray','Bone','Copper','Pink','Lines','Plasma'},'Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','colormap_choice','TooltipString','Select the color map for displaying derived parameters here');
 
 item=[0+item(3) item(2) parentitem(3)/2 1];
 handles.colormap_steps = uicontrol(handles.uipanel27,'Style','popupmenu', 'String',{'256','128','64','32','16','8','4','2'},'Units','characters', 'Fontunits','points','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','colormap_steps','TooltipString','Select the amount of colors in a colormap');
@@ -1231,7 +1275,7 @@ item=[parentitem(3)/2 item(2) parentitem(3)/2 2];
 handles.load_polyline = uicontrol(handles.multip12,'Style','pushbutton','String','Load coords','Units','characters', 'Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Callback',@extract.load_polyline_Callback,'Tag','load_polyline','TooltipString','Load poly line coordinates from *.mat file');
 
 item=[0 item(2)+item(4)+margin parentitem(3) 1];
-handles.text56 = uicontrol(handles.multip12,'Style','text','String','Parameter:','Units','characters', 'HorizontalAlignment','left','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','text56');
+handles.text56 = uicontrol(handles.multip12,'Style','text','String','Data to extract:','Units','characters', 'HorizontalAlignment','left','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','text56');
 
 item=[0 item(2)+item(4) parentitem(3) 1];
 handles.extraction_choice = uicontrol(handles.multip12,'Style','popupmenu','String','N/A','Units','characters', 'HorizontalAlignment','left','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Callback',@extract.extraction_choice_Callback,'Tag','extraction_choice','TooltipString','What parameter do you want to extract along the line / circle?');
@@ -1664,7 +1708,7 @@ item=[parentitem(3)/2 item(2) parentitem(3)/2 2];
 handles.load_area_coordinates = uicontrol(handles.multip17,'Style','pushbutton','String','Load coords','Units','characters', 'Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Callback',@extract.load_polyline_Callback,'Tag','load_area_coordinates','TooltipString','Load area coordinates from *.mat file');
 
 item=[0 item(2)+item(4)+margin parentitem(3) 1];
-handles.text56a = uicontrol(handles.multip17,'Style','text','String','Parameter:','Units','characters', 'HorizontalAlignment','left','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','text56a');
+handles.text56a = uicontrol(handles.multip17,'Style','text','String','Calculate the average of:','Units','characters', 'HorizontalAlignment','left','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','text56a');
 
 item=[0 item(2)+item(4) parentitem(3) 1];
 handles.extraction_choice_area = uicontrol(handles.multip17,'Style','popupmenu','String','N/A','Units','characters', 'HorizontalAlignment','left','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Tag','extraction_choice_area','TooltipString','What parameter do you want to extract from the area?');
@@ -1820,6 +1864,9 @@ handles.summaker = uicontrol(handles.multip22,'Style','pushbutton','String','Cal
 
 item=[0 item(2)+item(4) parentitem(3) 2];
 handles.stdmaker = uicontrol(handles.multip22,'Style','pushbutton','String','Calculate stdev','Units','characters','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Callback',{@plot.temporal_operation_Callback, 2}, 'Tag','stdmaker','TooltipString','Calculate standard deviation of displacements and append an extra frame with the results');
+
+%item=[0 item(2)+item(4) parentitem(3) 2];
+%handles.tkemaker = uicontrol(handles.multip22,'Style','pushbutton','String','Calculate TKE','Units','characters','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Callback',{@plot.temporal_operation_Callback, 3}, 'Tag','tkemaker','TooltipString','Calculate turbulent kinetic energy and append an extra frame with the results');
 
 item=[0 item(2)+item(4)+margin parentitem(3) 2];
 handles.remove_temporal_frame = uicontrol(handles.multip22,'Style','pushbutton','String','Remove current','Units','characters','Position',[item(1)+margin parentitem(4)-item(4)-margin-item(2) item(3)-margin*2 item(4)],'Callback',@plot.remove_temporal_frame_Callback, 'Tag','remove_temporal_frame','TooltipString','Remove the currently displayed frame');
@@ -2045,7 +2092,6 @@ set(handles.ac_msgbox,'BackgroundColor', get (handles.ac_msgbox,'BackgroundColor
 try
 	warning off
 	load('PIVlab_settings_default.mat','last_selected_device');
-
 	if exist('last_selected_device','var')
 		set(handles.ac_config, 'value',last_selected_device);
 	end
@@ -2053,7 +2099,7 @@ try
 catch
 
 end
-
+gui.put('multitiff',0); %default for compatibility: Not a multitiff.
+gui.put('pcopanda_dbl_image',0); %default for compatibility: Not a multitiff.
 
 disp('-> UI generated.')
-

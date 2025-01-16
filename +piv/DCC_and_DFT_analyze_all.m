@@ -4,7 +4,7 @@ handles=gui.gethand;
 try
 	warning off
 	recycle('off');
-	delete('cancel_piv');
+	delete(fullfile(userpath,'cancel_piv'));
 	gui.put('cancel',0);
 	warning on
 catch ME
@@ -25,7 +25,10 @@ if ok==1
 		gui.put('update_display',1)
 	end
 	filepath=gui.retr('filepath');
+	framenum=gui.retr('framenum');
 	filename=gui.retr('filename');
+	framepart = gui.retr ('framepart');
+
 	toggler=gui.retr('toggler');
 	resultslist=cell(0); %clear old results
 
@@ -101,6 +104,10 @@ if ok==1
 		do_correlation_matrices=gui.retr('do_correlation_matrices');
 		slicedfilepath1=cell(0);
 		slicedfilepath2=cell(0);
+		slicedframenum1=[];
+		slicedframenum2=[];
+		slicedframepart1=[];
+		slicedframepart2=[];
 		xlist=cell(0);
 		ylist=cell(0);
 		ulist=cell(0);
@@ -112,16 +119,20 @@ if ok==1
 			k=(i+1)/2;
 			slicedfilepath1{k}=filepath{i};
 			slicedfilepath2{k}=filepath{i+1};
+			slicedframenum1(k)=framenum(i);
+			slicedframenum2(k)=framenum(i+1);
+			slicedframepart1(k,:)=framepart(i,:);
+			slicedframepart2(k,:)=framepart(i+1,:);
 		end
 		%set(handles.totaltime, 'String','Time elapsed: N/A');
 		%xpos=size(image1,2)/2-40;
 		info=text(60,50, 'Analyzing ...','color', 'r','FontName','FixedWidth','fontweight', 'bold', 'fontsize', 16, 'BackgroundColor', 'k', 'tag', 'annoyingthing');
 		drawnow;
 		calc_time_start=tic;
-		hbar = pivprogress(size(slicedfilepath1,2),handles.overall);
+		hbar = gui.pivprogress(size(slicedfilepath1,2),handles.overall);
 		set(handles.totaltime,'String','');
 
-		if get(handles.dcc,'Value')==1
+		if get(handles.algorithm_selection,'Value')==3 %dcc
 			if get(handles.bg_subtract,'Value')==1
 				bg_img_A = gui.retr('bg_img_A');
 				bg_img_B = gui.retr('bg_img_B');
@@ -139,19 +150,19 @@ if ok==1
 			end
 
 			parfor i=1:size(slicedfilepath1,2)
-				if exist('cancel_piv','file')
+				if exist(fullfile(userpath,'cancel_piv'),'file')
 					close(hbar);
 					continue
 				end
 
 				[~,~,ext] = fileparts(slicedfilepath1{i});
 				if strcmp(ext,'.b16')
-					currentimage1=f_readB16(slicedfilepath1{i});
-					currentimage2=f_readB16(slicedfilepath2{i});
+					currentimage1=import.f_readB16(slicedfilepath1{i});
+					currentimage2=import.f_readB16(slicedfilepath2{i});
 
 				else
-					currentimage1=imread(slicedfilepath1{i});
-					currentimage2=imread(slicedfilepath2{i});
+					currentimage1=import.imread_wrapper(slicedfilepath1{i},slicedframenum1(i),slicedframepart1(i,:))
+					currentimage2=import.imread_wrapper(slicedfilepath2{i},slicedframenum2(i),slicedframepart2(i,:))
 				end
 				if bg_sub==1
 					if size(currentimage1,3)>1 %color image cannot be displayed properly when bg subtraction is enabled.
@@ -190,8 +201,8 @@ if ok==1
 					minintenst=stretcher(1);
 					maxintenst=stretcher(2);
 				end
-				image1 = PIVlab_preproc (image1,roirect,clahe, clahesize,highp,highpsize,intenscap,wienerwurst,wienerwurstsize,minintens,maxintens);
-				image2 = PIVlab_preproc (image2,roirect,clahe, clahesize,highp,highpsize,intenscap,wienerwurst,wienerwurstsize,minintens,maxintens);
+				image1 = preproc.PIVlab_preproc (image1,roirect,clahe, clahesize,highp,highpsize,intenscap,wienerwurst,wienerwurstsize,minintens,maxintens);
+				image2 = preproc.PIVlab_preproc (image2,roirect,clahe, clahesize,highp,highpsize,intenscap,wienerwurst,wienerwurstsize,minintens,maxintens);
 
 
 				if numel(masks_in_frame)< i
@@ -202,7 +213,7 @@ if ok==1
 
 				converted_mask=mask.convert_masks_to_binary(size(currentimage1(:,:,1)),mask_positions);
 
-				[x, y, u, v, typevector] = piv_DCC (image1,image2,interrogationarea, step, subpixfinder, converted_mask, roirect); %#ok<PFTUSW>
+				[x, y, u, v, typevector] = piv.piv_DCC (image1,image2,interrogationarea, step, subpixfinder, converted_mask, roirect); %#ok<PFTUSW>
 				xlist{i}=x;
 				ylist{i}=y;
 				ulist{i}=u;
@@ -212,7 +223,7 @@ if ok==1
 				correlation_matrices_list{i}=[];%no correlation matrix output for dcc
 				hbar.iterate(1);
 			end
-		elseif get(handles.fftmulti,'Value')==1
+		elseif get(handles.algorithm_selection,'Value')==1
 			passes=1;
 			if get(handles.checkbox26,'value')==1
 				passes=2;
@@ -243,18 +254,18 @@ if ok==1
 
 			parfor i=1:size(slicedfilepath1,2)
 				%------------------------
-				if exist('cancel_piv','file')
+				if exist(fullfile(userpath,'cancel_piv'),'file')
 					close(hbar);
 					continue
 				end
 
 				[~,~,ext] = fileparts(slicedfilepath1{i});
 				if strcmp(ext,'.b16')
-					currentimage1=f_readB16(slicedfilepath1{i});
-					currentimage2=f_readB16(slicedfilepath2{i});
+					currentimage1=import.f_readB16(slicedfilepath1{i});
+					currentimage2=import.f_readB16(slicedfilepath2{i});
 				else
-					currentimage1=imread(slicedfilepath1{i});
-					currentimage2=imread(slicedfilepath2{i});
+					currentimage1=import.imread_wrapper(slicedfilepath1{i},slicedframenum1(i),slicedframepart1(i,:))
+					currentimage2=import.imread_wrapper(slicedfilepath2{i},slicedframenum2(i),slicedframepart2(i,:))
 				end
 
 				if numel(masks_in_frame)< i
@@ -299,9 +310,9 @@ if ok==1
 					minintenst=stretcher(1);
 					maxintenst=stretcher(2);
 				end
-				image1 = PIVlab_preproc (image1,roirect,clahe, clahesize,highp,highpsize,intenscap,wienerwurst,wienerwurstsize,minintens,maxintens);
-				image2 = PIVlab_preproc (image2,roirect,clahe, clahesize,highp,highpsize,intenscap,wienerwurst,wienerwurstsize,minintens,maxintens);
-				[x, y, u, v, typevector,correlation_map,correlation_matrices] = piv_FFTmulti (image1,image2,interrogationarea, step, subpixfinder, converted_mask, roirect,passes,int2,int3,int4,imdeform,repeat,mask_auto,do_pad,do_correlation_matrices,repeat_last_pass,delta_diff_min); %#ok<PFTUSW>
+				image1 = preproc.PIVlab_preproc (image1,roirect,clahe, clahesize,highp,highpsize,intenscap,wienerwurst,wienerwurstsize,minintens,maxintens);
+				image2 = preproc.PIVlab_preproc (image2,roirect,clahe, clahesize,highp,highpsize,intenscap,wienerwurst,wienerwurstsize,minintens,maxintens);
+				[x, y, u, v, typevector,correlation_map,correlation_matrices] = piv.piv_FFTmulti (image1,image2,interrogationarea, step, subpixfinder, converted_mask, roirect,passes,int2,int3,int4,imdeform,repeat,mask_auto,do_pad,do_correlation_matrices,repeat_last_pass,delta_diff_min); %#ok<PFTUSW>
 				xlist{i}=x;
 				ylist{i}=y;
 				ulist{i}=u;
@@ -386,7 +397,7 @@ if ok==1
 					minintens = stretcher(1);
 					maxintens = stretcher(2);
 				end
-				image1 = PIVlab_preproc (image1,roirect,clahe, clahesize,highp,highpsize,intenscap,wienerwurst,wienerwurstsize,minintens,maxintens);
+				image1 = preproc.PIVlab_preproc (image1,roirect,clahe, clahesize,highp,highpsize,intenscap,wienerwurst,wienerwurstsize,minintens,maxintens);
 				if get(handles.Autolimit, 'value') == 1 %if autolimit is desired: do autolimit for each image seperately
 					if size(image2,3)>1
 						stretcher = stretchlim(rgb2gray(image2));
@@ -396,7 +407,7 @@ if ok==1
 					minintens = stretcher(1);
 					maxintens = stretcher(2);
 				end
-				image2 = PIVlab_preproc (image2,roirect,clahe, clahesize,highp,highpsize,intenscap,wienerwurst,wienerwurstsize,minintens,maxintens);
+				image2 = preproc.PIVlab_preproc (image2,roirect,clahe, clahesize,highp,highpsize,intenscap,wienerwurst,wienerwurstsize,minintens,maxintens);
 				interrogationarea=str2double(get(handles.intarea, 'string'));
 				step=str2double(get(handles.step, 'string'));
 				subpixfinder=get(handles.subpix,'value');
@@ -411,10 +422,10 @@ if ok==1
 
 				converted_mask=mask.convert_masks_to_binary(size(image1(:,:,1)),mask_positions);
 
-				if get(handles.dcc,'Value')==1
-					[x, y, u, v, typevector] = piv_DCC (image1,image2,interrogationarea, step, subpixfinder, converted_mask, roirect);
+				if get(handles.algorithm_selection,'Value')==3 %dcc
+					[x, y, u, v, typevector] = piv.piv_DCC (image1,image2,interrogationarea, step, subpixfinder, converted_mask, roirect);
 					correlation_matrices=[];%not available for DCC
-				elseif get(handles.fftmulti,'Value')==1
+				elseif get(handles.algorithm_selection,'Value')==1
 					passes=1;
 					if get(handles.checkbox26,'value')==1
 						passes=2;
@@ -432,7 +443,7 @@ if ok==1
 					repeat_last_pass = get(handles.repeat_last,'Value');
 					delta_diff_min = str2double(get(handles.edit52x,'String'));
 					[imdeform, repeat, do_pad] = piv.CorrQuality;
-					[x, y, u, v, typevector,correlation_map,correlation_matrices] = piv_FFTmulti (image1,image2,interrogationarea, step, subpixfinder, converted_mask, roirect,passes,int2,int3,int4,imdeform,repeat,mask_auto,do_pad,do_correlation_matrices,repeat_last_pass,delta_diff_min);
+					[x, y, u, v, typevector,correlation_map,correlation_matrices] = piv.piv_FFTmulti (image1,image2,interrogationarea, step, subpixfinder, converted_mask, roirect,passes,int2,int3,int4,imdeform,repeat,mask_auto,do_pad,do_correlation_matrices,repeat_last_pass,delta_diff_min);
 					%u=real(u)
 					%v=real(v)
 				end
@@ -442,7 +453,7 @@ if ok==1
 				resultslist{4,(i+1)/2}=v;
 				resultslist{5,(i+1)/2}=typevector;
 				resultslist{6,(i+1)/2}=[];
-				if get(handles.dcc,'Value')==1
+				if get(handles.algorithm_selection,'Value')==3 %dcc
 					correlation_map=zeros(size(x));
 				end
 				correlation_matrices_list{(i+1)/2}=correlation_matrices;
@@ -482,7 +493,7 @@ if ok==1
 	cancel=gui.retr('cancel');
 	if isempty(cancel)==1 || cancel ~=1
 		try
-			sound(audioread('finished.mp3'),44100);
+			sound(audioread(fullfile('+misc','finished.mp3')),44100);
 		catch
 		end
 	end
@@ -490,7 +501,7 @@ if ok==1
 	try
 		warning off
 		recycle('off');
-		delete('cancel_piv')
+		delete(fullfile(userpath,'cancel_piv'))
 		warning on
 	catch ME
 		disp('There was an error deleting a temporary file.')

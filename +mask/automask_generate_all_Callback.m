@@ -32,7 +32,7 @@ if size(filepath,1) > 1 %did the user load images?
 		gui.update_progress((round(i/num_frames_to_process*100)))
 		blocations = bwboundaries(pixel_mask,'holes');
 		masks_in_frame=gui.retr('masks_in_frame');
-		masks_in_frame=mask.px_to_rois(blocations,(i+1)/2,masks_in_frame);
+		masks_in_frame=mask.px_to_rois(blocations,(i+1)/2,masks_in_frame,'on');
 		gui.put('masks_in_frame',masks_in_frame);
 		mask.redraw_masks
 	end
@@ -51,15 +51,15 @@ if size(filepath,1) > 1 %did the user load images?
 			%% load images in a parfor loop
 			[~,~,ext] = fileparts(slicedfilepath1{i});
 			if strcmp(ext,'.b16')
-				currentimage1=f_readB16(slicedfilepath1{i});
-				currentimage2=f_readB16(slicedfilepath2{i});
+				currentimage1=import.f_readB16(slicedfilepath1{i});
+				currentimage2=import.f_readB16(slicedfilepath2{i});
 			else
 				currentimage1=imread(slicedfilepath1{i});
 				currentimage2=imread(slicedfilepath2{i});
 			end
 			pixel_mask=pixel_mask_from_piv_image(currentimage1,currentimage2,mask_generator_settings);
 			blocations = bwboundaries(pixel_mask,'holes');
-			resulting_masks_in_frame_cell{i}=px_to_rois(blocations,i,masks_in_frame);
+			resulting_masks_in_frame_cell{i}=px_to_rois(blocations,i,masks_in_frame,'on');
 		end
 		for i=1:num_frames_to_process-1
 		masks_in_frame{i,1}=resulting_masks_in_frame_cell{i}{i};
